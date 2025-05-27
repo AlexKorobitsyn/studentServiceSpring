@@ -1,16 +1,25 @@
 package org.alexk.studentsspringproject.model;
 
-import lombok.Builder;
+import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDate;
 
+
+
+@Entity
+@Table(name = "students")
 @Data
-@Builder
 public class Student {
-    private Integer id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long secretdbid;  // внутренний ID (primary key в БД)
+
+    private Integer id;       // внешний ID, может быть уникальным
     private String name;
-    private int age;
     private String secondName;
+    private Integer age;
     private String gender;
     private String email;
 }
+

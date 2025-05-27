@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 
 @Repository
 public class InMemoryStudentDAO {
@@ -39,7 +38,7 @@ public class InMemoryStudentDAO {
         return false;
     }
 
-    public void DeleteStudent(int id) {
+    public void DeleteStudent(Integer id) {
         students.removeIf(student -> student.getId() == id);
     }
 }
