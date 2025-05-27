@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Студенты в магистратуру</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #2c3e50;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f0f0f0;
+        }
+
+        form {
+            margin-top: 30px;
+            background-color: #fff;
+            padding: 15px;
+            border: 1px solid #ccc;
+            max-width: 500px;
+        }
+
+        form input {
+            margin-bottom: 10px;
+            padding: 8px;
+            width: 100%;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .success {
+            color: green;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🎓 Добро пожаловать!</h1>
+<p>Здесь мы собираем студентов, мечтающих поступить в магистратуру. Добавь себя!</p>
+
+<table id="students-table">
+    <thead>
+    <tr>
+        <th>Имя</th>
+        <th>Фамилия</th>
+        <th>Возраст</th>
+        <th>Пол</th>
+        <th>Email</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<form id="add-student-form">
+    <h3>Добавить студента</h3>
+    <input type="text" name="name" placeholder="Имя" required />
+    <input type="text" name="secondName" placeholder="Фамилия" required />
+    <input type="number" name="age" placeholder="Возраст" required />
+    <input type="text" name="gender" placeholder="Пол" />
+    <input type="email" name="email" placeholder="Email" required />
+    <button type="submit">Добавить</button>
+    <div class="success" id="success-message"></div>
+</form>
+
+<script>
+    const API = 'http://localhost:8080/api/v1/students';
+
+    function loadStudents() {
+        fetch(API)
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.querySelector("#students-table tbody");
+                tbody.innerHTML = "";
+                data.forEach(student => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${student.name}</td>
+                        <td>${student.secondName}</td>
+                        <td>${student.age}</td>
+                        <td>${student.gender || '—'}</td>
+                        <td>${student.email}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            })
+            .catch(err => console.error("Ошибка при загрузке:", err));
+    }
+
+    loadStudents();
+
+    document.getElementById("add-student-form").addEventListener("submit", function (e) {
+        e.preventDefault();
+        const form = e.target;
+        const student = {
+            name: form.name.value,
+            secondName: form.secondName.value,
+            age: parseInt(form.age.value),
+            gender: form.gender.value,
+            email: form.email.value
+        };
+
+        fetch(`${API}/save_student`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(student)
+        })
+            .then(res => {
+                if (res.ok) {
+                    document.getElementById("success-message").textContent = "✅ Студент добавлен!";
+                    form.reset();
+                    loadStudents();
+                } else {
+                    alert("Ошибка при добавлении");
+                }
+            });
+    });
+</script>
+
+</body>
+</html>
